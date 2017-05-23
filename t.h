@@ -18,6 +18,8 @@
 
 void do_service(int);
 void do_client(int);
+void str_read(int);
+void display(int);
 
 struct args
 {
@@ -38,6 +40,8 @@ void do_service(int conn)
 	char recvbuf[1024];
 	while(1){
 		memset(recvbuf, 0, sizeof(recvbuf));
+		str_read(conn);
+/*
 		int ret = recv(conn, recvbuf, sizeof(recvbuf), 0);
 		
 		if (ret==0){
@@ -49,6 +53,7 @@ void do_service(int conn)
 
 		fputs(recvbuf, stdout);
 		write(conn, recvbuf, ret);
+	*/
 		
 
 
@@ -64,30 +69,30 @@ void do_service(int conn)
 	
 }
 
-void display(int fd){
-	char buf[1024];
-
-	int bytes = read(fd, buf, 1024);
-
-	if (bytes) {
-		printf("%s", buf);
-	}
-
-}
 void do_client(int sockfd)
 {
 	char buffer[256]; 
+
 	int n;
+
 	printf("Please enter the message: ");
+
 	bzero(buffer,256);
-        fgets(buffer,255,stdin);
-	n = write(sockfd,buffer,strlen(buffer));
-	if (n < 0)
-		error("ERROR writing to socket");
+
+        while(fgets(buffer,255,stdin)) {
+
+		n = write(sockfd,buffer,strlen(buffer));
+
+		if (n < 0)
+			error("ERROR writing to socket");
+	}
+
 	bzero(buffer,256);
+
 	n = read(sockfd,buffer,255);
 	if (n < 0)
 		error("ERROR reading from socket");
+
 	printf("%s\n",buffer);
 }
 
@@ -122,6 +127,7 @@ void str_read(int fd)
 
 
 		default:
+			printf("test %d\n", selres);
 			if (FD_ISSET(fd, &rfds) || FD_ISSET(fd, &wfds)) {
 				display(fd);
 
@@ -130,4 +136,20 @@ void str_read(int fd)
 
 	}
 	
+}
+
+
+void display(int fd){
+	char buf[1024];
+
+	int bytes = read(fd, buf, 1024);
+	printf("bytest %d \n", bytes);
+	if (bytes) {
+		printf("%s", buf);
+	} else {
+
+		printf("not data coming \n");
+		exit(-1);
+	}
+
 }

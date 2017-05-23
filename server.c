@@ -11,6 +11,15 @@ int main()
 
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
 	
+	int on = 1;
+
+
+	if (-1 == setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on))) {
+		printf("failed set sock opt");
+		return -1;
+	}
+
+
 	bzero(&s_addr, sizeof(struct sockaddr));
 	
 	s_addr.sin_family = AF_INET;
