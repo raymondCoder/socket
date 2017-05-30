@@ -10,11 +10,20 @@
 #include <sys/select.h>
 #include <unistd.h>
 
+#include <unistd.h>
+
+#include <poll.h> /* poll function */
+#include <errno.h>
+#include <limits.h>
 #define ERR_EXIT(m) \
     do { \
         perror(m); \
         exit(EXIT_FAILURE); \
     } while (0)
+
+#ifndef OPEN_MAX
+#define OPEN_MAX 40960
+#endif
 
 void do_service(int);
 void do_client(int);
