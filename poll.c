@@ -9,6 +9,7 @@ int server_open();
 
 void getC(int);
 void getD(int);
+void getClient(int);
 
 int main()
 {
@@ -87,7 +88,7 @@ void getC(int listenfd)
 		printf("revents %d\n", clients[0].revents);
 		if (clients[0].revents & POLLIN) {
 			connfd = accept(listenfd, (struct sockaddr *)&cliaddr, &socklen);
-			
+			getClient(connfd);
 			sprintf(buf, "accpet from %d:%d\n",  inet_ntoa(cliaddr.sin_addr.s_addr), cliaddr.sin_port);
 			printf(buf, "");
 			printf("start check clients fd\n");
@@ -123,6 +124,26 @@ void getC(int listenfd)
 
 }
 
+void getClient(int fd)
+{
+	struct sockaddr_in sock;
+	char guest_ip[20]; 
+	socklen_t addrlen;
+	int r;
+	r= getpeername(fd, &sock, &addrlen);
+	printf("start to get client info \n");
+	if (r==-1)  {
+		printf("failed to get peer name\n");
+	}
+	printf("r = %d\n", r);
+	printf("addr len = %d \n", addrlen);
+	/*
+	   const char *inet_ntop(int af, const void *src,  char *dst, socklen_t size);
+	 */
+	inet_ntop(AF_INET, &sock.sin_addr, guest_ip, sizeof(guest_ip) );
+	
+	printf("guest ip %s ,  port = %d \n", guest_ip, sock.sin_port);
+}
 void handle(struct pollfd* clients, int maxClient, int nready) {
 
 	int connfd;
